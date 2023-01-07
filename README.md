@@ -29,7 +29,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/deepanchal/anycubic-i3-mega-s">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/3D_printer.svg" alt="Logo" width="80" height="80">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/3D_printer.svg" alt="Logo" width="200">
   </a>
 
   <h3 align="center">Anycubic i3 Mega S</h3>

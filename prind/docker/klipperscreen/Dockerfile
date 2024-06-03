@@ -1,6 +1,6 @@
-FROM python:3 as build
+FROM python:3.12-bookworm as build
 
-ARG REPO=https://github.com/jordanruthe/KlipperScreen
+ARG REPO=https://github.com/KlipperScreen/KlipperScreen
 ARG VERSION=master
 
 RUN apt update \
@@ -8,6 +8,7 @@ RUN apt update \
       libgirepository1.0-dev \
       libdbus-glib-1-dev \
       cmake \
+      libsystemd-dev \
  && apt clean
 
 WORKDIR /opt
@@ -18,7 +19,7 @@ RUN git clone ${REPO} klipperscreen \
 RUN python -m venv venv \
  && venv/bin/pip install -r klipperscreen/scripts/KlipperScreen-requirements.txt
 
-FROM python:3-slim as run
+FROM python:3.12-slim-bookworm as run
 
 RUN apt update \
  && apt install -y \

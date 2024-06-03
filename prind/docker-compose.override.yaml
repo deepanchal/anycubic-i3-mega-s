@@ -2,14 +2,17 @@
 x-ustreamer-svc: &ustreamer-svc
   image: mkuf/ustreamer:latest
   restart: unless-stopped
-  command: --host=0.0.0.0 --port=8080 --slowdown --device=/dev/webcam --resolution=1280x960 --format=MJPEG --desired-fps=60 --drop-same-frames=30
+  command: >
+    --host=0.0.0.0
+    --port=8080
+    --slowdown
+    --device=/dev/webcam
+    --resolution=1280x960
+    --format=MJPEG
+    --desired-fps=30
 
 ## Add your personal config here
 services:
-  klipper:
-    devices:
-      - /dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0:/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0
-
   webcam:
     <<: *ustreamer-svc
     devices:

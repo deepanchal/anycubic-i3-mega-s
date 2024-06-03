@@ -1,3 +1,5 @@
+This Image is built and used by [prind](.).
+
 # ustreamer packaged in Docker
 ## What is ustreamer?
 
@@ -28,7 +30,7 @@ services:
 |---|---|
 |User| `ustreamer (1000:1000)` |
 |Workdir|`/opt`|
-|Entrypoint|`/opt/ustreamer/ustreamer`|
+|Entrypoint|`/opt/ustreamer`|
 |Cmd|`--host=0.0.0.0 --port=8080`|
 
 ## Ports
@@ -42,8 +44,8 @@ none
 ## Tags
 |Tag|Description|Static|
 |---|---|---|
-|`latest`/`nightly`|Refers to the most recent runtime Image.|May point to a new build within 24h, depending on code changes in the upstream repository.|
-|`<7-digit-sha>` <br>eg: `f11d390`|Refers to a specific commit SHA in the upstream repository. eg: [pikvm/ustreamer:f11d390](https://github.com/pikvm/ustreamer/commit/f11d390b2295aff904408f4b38a61bc37a1c4f35)|Yes|
+|`latest`|Refers to the most recent runtime Image.|May point to a new build within 24h, depending on code changes in the upstream repository.|
+|`<git description>` <br>eg: `v5.51-1-g3c7564d`|Refers to a specific [git description](https://git-scm.com/docs/git-describe#_examples) in the upstream repository. eg: [pikvm/ustreamer:v5.51-1-g3c7564d](https://github.com/pikvm/ustreamer/commit/3c7564da19e32badeb858d73bcf98875349dfaff)|Yes|
 
 ## Targets
 |Target|Description|Pushed|

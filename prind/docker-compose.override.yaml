@@ -9,7 +9,8 @@ x-ustreamer-svc: &ustreamer-svc
     --device=/dev/webcam
     --resolution=1280x960
     --format=MJPEG
-    --desired-fps=30
+#    --desired-fps=60
+#    --drop-same-frames=30
 
 ## Add your personal config here
 services:
@@ -25,3 +26,55 @@ services:
       traefik.http.routers.webcam.entrypoints: web
       traefik.http.middlewares.webcam.stripprefix.prefixes: /webcam
       traefik.http.routers.webcam.middlewares: webcam
+
+  # klipper:
+  #   devices:
+  #       - /dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0:/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0
+
+  moonraker:
+    image: moonraker:ffmpeg
+    logging:
+      driver: json-file
+    build:
+      dockerfile_inline: |
+        FROM alpine/git as pull
+        RUN git clone https://github.com/mainsail-crew/moonraker-timelapse /opt/moonraker-timelapse
+        FROM mkuf/moonraker:latest
+        USER root
+        RUN apt update \
+        && apt install -y ffmpeg wget \
+        && apt clean
+        USER moonraker
+        COPY --chown=moonraker:moonraker --from=pull /opt/moonraker-timelapse /opt/moonraker-timelapse
+        RUN ln -s /opt/moonraker-timelapse/component/timelapse.py /opt/moonraker/moonraker/components/timelapse.py
+    volumes:
+      - /opt/timelapse:/opt/timelapse
+      - /dev/null:/opt/klipper/config/null
+      - /dev/null:/opt/klipper/docs/null
+      - /run/dbus:/run/dbus
+      - /run/systemd:/run/systemd
+      - run:/opt/printer_data/run
+      - gcode:/opt/printer_data/gcodes
+      - log:/opt/printer_data/logs
+      - moonraker-db:/opt/printer_data/database
+      - ./config:/opt/printer_data/config
+
+  glances:
+    image: nicolargo/glances:latest-full
+    restart: unless-stopped
+    pid: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      GLANCES_OPT: -w
+    labels:
+      org.prind.service: glances
+      traefik.enable: true
+      traefik.http.services.glances.loadbalancer.server.port: 61208
+      traefik.http.middlewares.glances-redirect.redirectregex.regex: (^.*\/glances$$)
+      traefik.http.middlewares.glances-redirect.redirectregex.replacement: $$1/
+      traefik.http.middlewares.glances-redirect.redirectregex.permanent: false
+      traefik.http.middlewares.glances-prefix.stripprefix.prefixes: /glances
+      traefik.http.routers.glances.middlewares: glances-redirect,glances-prefix
+      traefik.http.routers.glances.rule: PathPrefix(`/glances`)
+      traefik.http.routers.glances.entrypoints: web
